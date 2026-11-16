@@ -21,8 +21,6 @@ function App() {
       if (parsedUrl) {
         const analysisResult = analyzeURL(parsedUrl);
         setAnalysis(analysisResult);
-        // Tambahan untuk ngecek di Console (F12)
-        console.log("HASIL ASLI DARI RULE ENGINE:", analysisResult);
       } else {
         setAnalysis(null);
         setError("Format URL tidak valid.");
@@ -61,6 +59,30 @@ function App() {
     if (level === 'Risiko tinggi') return 'bg-red-100 text-red-800 border-red-300';
     if (level === 'Waspada') return 'bg-yellow-100 text-yellow-800 border-yellow-300';
     return 'bg-green-100 text-green-800 border-green-300';
+  };
+
+  // Fungsi untuk membuka link dengan konfirmasi keamanan
+  const handleOpenLink = (url: string) => {
+    if (analysis?.level === 'Risiko tinggi') {
+      const confirm = window.confirm(
+        "PERINGATAN KERAS: Tautan ini memiliki RISIKO TINGGI dan berpotensi mencuri data Anda. Apakah Anda benar-benar yakin ingin membukanya?"
+      );
+      if (!confirm) return; // Batal buka
+    } else if (analysis?.level === 'Waspada') {
+      const confirm = window.confirm(
+        "Hati-hati: Tautan ini memiliki indikator mencurigakan. Tetap lanjutkan membuka tautan?"
+      );
+      if (!confirm) return;
+    }
+    
+    // Buka link di tab baru dengan aman (noopener, noreferrer)
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  // Fungsi untuk menyalin teks
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert("Teks berhasil disalin!");
   };
 
   return (
@@ -131,6 +153,30 @@ function App() {
               )}
             </div>
           )}
+
+          {/* TOMBOL AKSI & EDUKASI */}
+          <div className="mt-5 flex gap-3">
+            {result.type === 'URL' && (
+              <button 
+                onClick={() => handleOpenLink(result.rawData)}
+                className={`flex-1 text-white px-4 py-2 rounded-lg shadow transition ${analysis?.level === 'Risiko tinggi' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+              >
+                {analysis?.level === 'Risiko tinggi' ? 'Buka (Berisiko!)' : 'Buka Tautan'}
+              </button>
+            )}
+            <button 
+              onClick={() => handleCopy(result.rawData)}
+              className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition"
+            >
+              Salin Teks
+            </button>
+          </div>
+
+          {/* KOTAK EDUKASI */}
+          <div className="mt-5 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+            <strong className="block mb-1">💡 Tahukah kamu?</strong>
+            Penipuan lewat QR Code disebut <strong>Quishing</strong>. Selalu periksa domain tautan sebelum membuka. Jangan pernah memasukkan password atau data pribadi di situs yang mencurigakan.
+          </div>
         </div>
       )}
 
