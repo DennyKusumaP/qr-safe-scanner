@@ -50,4 +50,11 @@ describe('Rule Engine Heuristik', () => {
     const result = analyze('https://example.com/aplikasi.apk');
     expect(result.matches.some(m => m.code === 'R09')).toBe(true);
   });
+
+  // TAMBAHAN: Tes pembuktian skor akhir
+  it('Kasus IP + APK harus menghasilkan Skor 7 (Risiko Tinggi)', () => {
+    const result = analyze('http://192.168.1.1/admin.apk');
+    expect(result.score).toBe(7); 
+    expect(result.level).toBe('Risiko tinggi');
+  });
 });
