@@ -120,7 +120,8 @@ function App() {
         </label>
       </div>
 
-      {result && (
+      {/* INI BAGIAN YANG DIUBAH: Tambah result.rawData */}
+      {result && result.rawData && (
         <div className="mt-4 p-5 bg-white border border-gray-200 shadow-md rounded-lg w-full max-w-md">
           <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Hasil Pemindaian</h3>
           
